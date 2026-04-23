@@ -164,7 +164,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'btn btn-sm btn-danger';
-        btn.innerHTML = '<i class="bi bi-trash"></i>';
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-trash';
+        btn.appendChild(icon);
         btn.onclick = function() { removeFromList(index); };
         btnCell.appendChild(btn);
       });
