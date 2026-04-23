@@ -60,12 +60,14 @@ $data = urldecode($_GET['data']);
     <tbody>
       <?php
       $medicamentosArray = explode(', ', $medicamentos);
-      $quantidadesArray = explode(', ', $quantidades);
-      for ($i = 0; $i < count($medicamentosArray); $i++):
+      $quantidadesArray  = explode(', ', $quantidades);
+      // Ensure both arrays have the same length to prevent silent data loss
+      $count = min(count($medicamentosArray), count($quantidadesArray));
+      for ($i = 0; $i < $count; $i++):
       ?>
         <tr>
           <td><?php echo htmlspecialchars($medicamentosArray[$i], ENT_QUOTES, 'UTF-8'); ?></td>
-          <td><?php echo htmlspecialchars($quantidadesArray[$i] ?? '', ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><?php echo htmlspecialchars($quantidadesArray[$i], ENT_QUOTES, 'UTF-8'); ?></td>
         </tr>
       <?php endfor; ?>
     </tbody>
