@@ -5,17 +5,13 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'admin') {
     exit;
 }
 
-// Conexão com o banco de dados
 include 'db.php';
 
-// Obter parâmetros da URL
 $data_distribuicao = $_GET['data_distribuicao'] ?? '';
 $hora_distribuicao = $_GET['hora_distribuicao'] ?? '';
 $paciente_nome = $_GET['paciente'] ?? '';
 
-// Verificar se os parâmetros foram fornecidos
 if ($data_distribuicao && $hora_distribuicao && $paciente_nome) {
-    // Consulta para buscar distribuições específicas
     $stmt = $pdo->prepare('
         SELECT dp.*, m.medicamento, m.apresentacao, m.marca, m.lote, m.validade, u.usuario as estabelecimento, p.nome as paciente
         FROM distribuicao_pacientes dp
@@ -33,7 +29,6 @@ if ($data_distribuicao && $hora_distribuicao && $paciente_nome) {
     ]);
     $saidas = $stmt->fetchAll();
 
-    // Armazenar informações para exibir na página
     $data_saida = $data_distribuicao;
     $hora_saida = $hora_distribuicao;
     $nome_paciente = $paciente_nome;
@@ -44,169 +39,88 @@ if ($data_distribuicao && $hora_distribuicao && $paciente_nome) {
     $nome_paciente = '';
 }
 
-// Função para formatar a data
 function formatarData($data) {
     $date = new DateTime($data);
     return $date->format('d/m/Y');
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saída de Medicamentos Confirmada - CAF</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            background-color: #fff;
-        }
-        .header-saida {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header-saida img {
-            height: 60px;
-        }
-        .header-text {
-            text-align: center;
-            flex-grow: 1;
-        }
-        .header-text h1, .header-text h2, .header-text h3 {
-            margin: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .print-button {
-            margin: 20px 0;
-            text-align: right;
-        }
-        .print-button button {
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        .entregue-recebido {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .entregue, .recebido {
-            width: 45%;
-            text-align: center;
-            border-style: solid;
-        }
-        @media print {
-            body {
-                -webkit-print-color-adjust: exact;
-            }
-            .print-button {
-                display: none;
-            }
-            .main-content {
-                margin: 0;
-                padding: 0;
-                page-break-after: auto;
-            }
-            @page {
-                size: A4 portrait;
-                margin: 10mm;
-            }
-        }
-    </style>
-    <script>
-        function imprimirConteudo() {
-            var conteudo = document.querySelector('.main-content').innerHTML;
-            var estilos = document.querySelector('style').innerHTML;
-            var janelaImpressao = window.open('', '', 'width=800, height=600');
-            janelaImpressao.document.write('<html><head><title>Imprimir</title>');
-            janelaImpressao.document.write('<link rel="stylesheet" href="css/style.css">');
-            janelaImpressao.document.write('<style>' + estilos + '</style>');
-            janelaImpressao.document.write('</head><body>');
-            janelaImpressao.document.write(conteudo);
-            janelaImpressao.document.write('</body></html>');
-            janelaImpressao.document.close();
-            janelaImpressao.print();
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saída de Medicamentos Confirmada – CAF</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <?php include 'includes/head.php'; ?>
-    <div class="container">
-        <?php include 'includes/menu_lateral.php'; ?>
-        <div class="main-content">
-            <div class="header-saida">
-                <img src="img/brasao.png" alt="Logo Left">
-                <div class="header-text">
-                    <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-                    <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-                    <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-                </div>
-                <img src="img/prefeitura.png" alt="Logo Right">
-            </div>
-            <center>
-                <h2>SAÍDA DE MEDICAMENTOS</h2>
-            </center>
-            <div class="print-button">
-                <button onclick="imprimirConteudo()">Imprimir</button>
-            </div>
-            <div class="ultima-saida-info">
-                <h4>Data: <?php echo formatarData($data_saida); ?>
-                - Hora: <?php echo htmlspecialchars($hora_saida); ?> <br>
-                Paciente: <?php echo htmlspecialchars($nome_paciente); ?></h4>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Medicamento/Produto</th>
-                        <th>Quantidade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($saidas): ?>
-                        <?php foreach ($saidas as $saida): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($saida['medicamento']); ?></td>
-                                <td><?php echo htmlspecialchars($saida['quantidade']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="10">Nenhuma saída encontrada.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-            <div class="entregue-recebido">
-                <div class="entregue">
-                    <p>ENTREGUE POR:</p>
-                    <p>________________________________</p>
-                    <p><?php echo formatarData($data_saida); ?>, às <?php echo htmlspecialchars($hora_saida); ?></p>
-                </div>
-
-                <div class="recebido">
-                    <p>RECEBIDO POR:</p>
-                    <p>________________________________</p>
-                    <p>____/____/______, às ____:____h</p>
-                </div>
-            </div>
-        </div>
+<div class="container py-3">
+  <div class="mb-3 no-print">
+    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary btn-print">
+      <i class="bi bi-printer me-1"></i>Imprimir
+    </button>
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary ms-2">
+      <i class="bi bi-arrow-left me-1"></i>Voltar
+    </a>
+  </div>
+  <div class="print-header">
+    <img src="img/brasao.png" alt="Brasão">
+    <div class="print-header-text">
+      <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
+      <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
+      <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
     </div>
-    <?php include 'includes/foot.php'; ?>
+    <img src="img/prefeitura.png" alt="Prefeitura">
+  </div>
+
+  <h2 class="text-center mb-3">SAÍDA DE MEDICAMENTOS</h2>
+
+  <?php if ($data_saida): ?>
+    <p><strong>Data:</strong> <?php echo formatarData($data_saida); ?>
+    &nbsp;|&nbsp; <strong>Hora:</strong> <?php echo htmlspecialchars($hora_saida); ?>
+    &nbsp;|&nbsp; <strong>Paciente:</strong> <?php echo htmlspecialchars($nome_paciente); ?></p>
+  <?php endif; ?>
+
+  <table class="table table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Medicamento/Produto</th>
+        <th>Quantidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if ($saidas): ?>
+        <?php foreach ($saidas as $saida): ?>
+          <tr>
+            <td><?php echo htmlspecialchars($saida['medicamento']); ?></td>
+            <td><?php echo htmlspecialchars($saida['quantidade']); ?></td>
+          </tr>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <tr>
+          <td colspan="2" class="text-center">Nenhuma saída encontrada.</td>
+        </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+
+  <?php if ($data_saida): ?>
+  <div class="row mt-4">
+    <div class="col-5 text-center border p-3">
+      <p><strong>ENTREGUE POR:</strong></p>
+      <p>________________________________</p>
+      <p><?php echo formatarData($data_saida); ?>, às <?php echo htmlspecialchars($hora_saida); ?></p>
+    </div>
+    <div class="col-2"></div>
+    <div class="col-5 text-center border p-3">
+      <p><strong>RECEBIDO POR:</strong></p>
+      <p>________________________________</p>
+      <p>____/____/______, às ____:____h</p>
+    </div>
+  </div>
+  <?php endif; ?>
+</div>
+<?php include 'includes/foot.php'; ?>
 </body>
 </html>
