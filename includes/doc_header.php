@@ -1,3 +1,6 @@
+<?php if (isset($_GET['autoprint'])): ?>
+<script>document.addEventListener('DOMContentLoaded', function() { window.print(); });</script>
+<?php endif; ?>
 <table class="doc-header-table">
   <tr>
     <td class="doc-header-logo"><img src="img/brasao.png" alt="Brasão"></td>

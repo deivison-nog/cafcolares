@@ -226,12 +226,12 @@ form button:hover {
     vertical-align: middle;
 }
 .doc-header-logo {
-    width: 90px;
+    width: 70px;
     text-align: center;
 }
 .doc-header-logo img {
-    height: 64px;
-    max-width: 82px;
+    height: 44px;
+    max-width: 54px;
     object-fit: contain;
 }
 .doc-header-text {

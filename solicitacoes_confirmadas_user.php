@@ -78,7 +78,7 @@ $data = urldecode($_GET['data']);
   </div>
 
   <div class="doc-btn-row no-print">
-    <button onclick="window.print()" class="btn btn-success px-4">Imprimir</button>
+    <button onclick="var u=new URL(location.href);u.searchParams.set('autoprint','1');window.open(u.toString(),'_blank');" class="btn btn-success px-4">Imprimir</button>
   </div>
 
 </div>
