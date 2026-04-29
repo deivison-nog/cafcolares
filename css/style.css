@@ -203,3 +203,124 @@ form button:hover {
 .finalizar-button:hover {
     background-color: #0056b3; /* Cor de fundo ao passar o mouse */
 }
+
+/* ===== Document / Print Pages ===== */
+
+.doc-page {
+    max-width: 920px;
+    margin: 24px auto;
+    padding: 20px 24px;
+    background: #fff;
+}
+
+/* Institutional header table */
+.doc-header-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    margin-bottom: 4px;
+}
+.doc-header-table td {
+    border: 1px solid #000;
+    padding: 8px 12px;
+    vertical-align: middle;
+}
+.doc-header-logo {
+    width: 90px;
+    text-align: center;
+}
+.doc-header-logo img {
+    height: 64px;
+    max-width: 82px;
+    object-fit: contain;
+}
+.doc-header-text {
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: bold;
+    line-height: 1.75;
+}
+
+/* Document title */
+.doc-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    padding: 14px 0 10px;
+    margin-bottom: 0;
+}
+
+/* Data table */
+.doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+.doc-table th,
+.doc-table td {
+    border: 1px solid #000;
+    padding: 9px 11px;
+    text-align: left;
+    font-size: 0.88rem;
+}
+.doc-table thead th {
+    font-weight: bold;
+    background-color: #f5f5f5;
+}
+
+/* Optional info line (date, patient, establishment) */
+.doc-info {
+    font-size: 0.88rem;
+    margin: 8px 0 10px;
+}
+
+/* Signature row */
+.doc-signature-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+}
+.doc-signature-box {
+    flex: 1;
+    border: 2px solid #000;
+    padding: 16px 20px;
+    text-align: center;
+}
+.doc-signature-box .doc-label {
+    font-weight: bold;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+.doc-signature-line {
+    border-top: 1px solid #000;
+    margin: 18px auto 10px;
+    width: 78%;
+}
+.doc-signature-date {
+    margin-top: 4px;
+    font-size: 0.88rem;
+}
+
+/* Print button row (screen only) */
+.doc-btn-row {
+    text-align: right;
+    margin-top: 24px;
+}
+
+/* Print rules */
+@media print {
+    .no-print,
+    .header,
+    .footer {
+        display: none !important;
+    }
+    body {
+        background-color: #fff !important;
+    }
+    .doc-page {
+        margin: 0;
+        padding: 8px 12px;
+        max-width: 100%;
+    }
+}

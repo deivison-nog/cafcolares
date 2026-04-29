@@ -48,44 +48,36 @@ function formatarData($data) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container py-3">
-  <div class="mb-3 no-print">
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary btn-print">
-      <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
-    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary ms-2">
+<div class="doc-page">
+
+  <div class="no-print mb-2">
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-arrow-left me-1"></i>Voltar
     </a>
   </div>
-  <div class="print-header">
-    <img src="img/brasao.png" alt="Brasão">
-    <div class="print-header-text">
-      <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-      <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-      <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-    </div>
-    <img src="img/prefeitura.png" alt="Prefeitura">
-  </div>
 
-  <h2 class="text-center mb-3">SAÍDA DE MEDICAMENTOS</h2>
+  <?php include 'includes/doc_header.php'; ?>
 
-  <p>
-    <strong>Paciente:</strong> <?php echo htmlspecialchars($saida[0]['paciente_nome'], ENT_QUOTES, 'UTF-8'); ?><br>
+  <h2 class="doc-title">Saída de Medicamentos</h2>
+
+  <p class="doc-info">
+    <strong>Paciente:</strong> <?php echo htmlspecialchars($saida[0]['paciente_nome'], ENT_QUOTES, 'UTF-8'); ?>&nbsp;|&nbsp;
     <strong>Data:</strong> <?php echo formatarData($saida[0]['data_distribuicao']); ?>
-    &nbsp;|&nbsp; <strong>Hora:</strong> <?php echo htmlspecialchars($saida[0]['hora_distribuicao'], ENT_QUOTES, 'UTF-8'); ?>
-    &nbsp;|&nbsp; <strong>Estabelecimento:</strong> <?php echo htmlspecialchars($saida[0]['estabelecimento'], ENT_QUOTES, 'UTF-8'); ?>
+    &nbsp;|&nbsp;
+    <strong>Hora:</strong> <?php echo htmlspecialchars($saida[0]['hora_distribuicao'], ENT_QUOTES, 'UTF-8'); ?>
+    &nbsp;|&nbsp;
+    <strong>Estabelecimento:</strong> <?php echo htmlspecialchars($saida[0]['estabelecimento'], ENT_QUOTES, 'UTF-8'); ?>
   </p>
 
-  <h5>Detalhes dos Medicamentos</h5>
-  <table class="table table-bordered">
-    <thead class="table-light">
+  <table class="doc-table">
+    <thead>
       <tr>
         <th>Medicamento</th>
         <th>Apresentação</th>
         <th>Marca</th>
         <th>Lote</th>
         <th>Validade</th>
-        <th>Quantidade</th>
+        <th style="width:90px;">Qtd.</th>
       </tr>
     </thead>
     <tbody>
@@ -102,19 +94,23 @@ function formatarData($data) {
     </tbody>
   </table>
 
-  <div class="row mt-4">
-    <div class="col-5 text-center border p-3">
-      <p><strong>ENTREGUE POR:</strong></p>
-      <p>________________________________</p>
-      <p><?php echo formatarData($saida[0]['data_distribuicao']); ?>, às <?php echo htmlspecialchars($saida[0]['hora_distribuicao'], ENT_QUOTES, 'UTF-8'); ?></p>
+  <div class="doc-signature-row">
+    <div class="doc-signature-box">
+      <p class="doc-label">ENTREGUE POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date"><?php echo formatarData($saida[0]['data_distribuicao']); ?>, às <?php echo htmlspecialchars($saida[0]['hora_distribuicao'], ENT_QUOTES, 'UTF-8'); ?></p>
     </div>
-    <div class="col-2"></div>
-    <div class="col-5 text-center border p-3">
-      <p><strong>RECEBIDO POR:</strong></p>
-      <p>________________________________</p>
-      <p>____/____/______, às ____:____h</p>
+    <div class="doc-signature-box">
+      <p class="doc-label">RECEBIDO POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date">____/____/______, às ____:____h</p>
     </div>
   </div>
+
+  <div class="doc-btn-row no-print">
+    <button onclick="window.print()" class="btn btn-success px-4">Imprimir</button>
+  </div>
+
 </div>
 <?php include 'includes/foot.php'; ?>
 </body>

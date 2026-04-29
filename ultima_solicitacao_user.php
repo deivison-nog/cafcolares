@@ -63,35 +63,26 @@ try {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container py-3">
-  <div class="mb-3 no-print">
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary btn-print">
-      <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
-    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary ms-2">
+<div class="doc-page">
+
+  <div class="no-print mb-2">
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-arrow-left me-1"></i>Voltar
     </a>
   </div>
-  <div class="print-header">
-    <img src="img/brasao.png" alt="Brasão">
-    <div class="print-header-text">
-      <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-      <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-      <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-    </div>
-    <img src="img/prefeitura.png" alt="Prefeitura">
-  </div>
 
-  <h2 class="text-center text-uppercase mb-3">
+  <?php include 'includes/doc_header.php'; ?>
+
+  <h2 class="doc-title">
     Solicitação de Medicamentos do(a) <?php echo htmlspecialchars($usuario_nome); ?>
   </h2>
 
   <?php if ($solicitacoes): ?>
-    <table class="table table-bordered">
-      <thead class="table-light">
+    <table class="doc-table">
+      <thead>
         <tr>
           <th>Medicamento/Produto</th>
-          <th>Quantidade</th>
+          <th style="width:180px;">Quantidade</th>
         </tr>
       </thead>
       <tbody>
@@ -104,22 +95,26 @@ try {
       </tbody>
     </table>
 
-    <div class="row mt-4">
-      <div class="col-5 text-center border p-3">
-        <p><strong>SOLICITADO POR:</strong></p>
-        <p>________________________________</p>
-        <p>Em <?php echo date('d/m/y \à\s H:i', strtotime($solicitacao['data_solicitacao'])); ?></p>
+    <div class="doc-signature-row">
+      <div class="doc-signature-box">
+        <p class="doc-label">SOLICITADO POR:</p>
+        <div class="doc-signature-line"></div>
+        <p class="doc-signature-date">Em <?php echo date('d/m/Y, \à\s H:i', strtotime($solicitacao['data_solicitacao'])); ?></p>
       </div>
-      <div class="col-2"></div>
-      <div class="col-5 text-center border p-3">
-        <p><strong>RECEBIDO POR:</strong></p>
-        <p>________________________________</p>
-        <p>____/____/______, às ____:____h</p>
+      <div class="doc-signature-box">
+        <p class="doc-label">RECEBIDO POR:</p>
+        <div class="doc-signature-line"></div>
+        <p class="doc-signature-date">____/____/______, às ____:____h</p>
       </div>
     </div>
   <?php else: ?>
     <p>Nenhuma solicitação encontrada.</p>
   <?php endif; ?>
+
+  <div class="doc-btn-row no-print">
+    <button onclick="window.print()" class="btn btn-success px-4">Imprimir</button>
+  </div>
+
 </div>
 <?php include 'includes/foot.php'; ?>
 </body>

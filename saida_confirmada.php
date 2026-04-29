@@ -55,38 +55,33 @@ function formatarData($data) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container py-3">
-  <div class="mb-3 no-print">
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary btn-print">
-      <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
-    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary ms-2">
+<div class="doc-page">
+
+  <div class="no-print mb-2">
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-arrow-left me-1"></i>Voltar
     </a>
   </div>
-  <div class="print-header">
-    <img src="img/brasao.png" alt="Brasão">
-    <div class="print-header-text">
-      <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-      <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-      <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-    </div>
-    <img src="img/prefeitura.png" alt="Prefeitura">
-  </div>
 
-  <h2 class="text-center mb-3">SAÍDA DE MEDICAMENTOS</h2>
+  <?php include 'includes/doc_header.php'; ?>
+
+  <h2 class="doc-title">Saída de Medicamentos</h2>
 
   <?php if ($data_saida): ?>
-    <p><strong>Data:</strong> <?php echo formatarData($data_saida); ?>
-    &nbsp;|&nbsp; <strong>Hora:</strong> <?php echo htmlspecialchars($hora_saida); ?>
-    &nbsp;|&nbsp; <strong>Paciente:</strong> <?php echo htmlspecialchars($nome_paciente); ?></p>
+    <p class="doc-info">
+      <strong>Data:</strong> <?php echo formatarData($data_saida); ?>
+      &nbsp;|&nbsp;
+      <strong>Hora:</strong> <?php echo htmlspecialchars($hora_saida); ?>
+      &nbsp;|&nbsp;
+      <strong>Paciente:</strong> <?php echo htmlspecialchars($nome_paciente); ?>
+    </p>
   <?php endif; ?>
 
-  <table class="table table-bordered">
-    <thead class="table-light">
+  <table class="doc-table">
+    <thead>
       <tr>
         <th>Medicamento/Produto</th>
-        <th>Quantidade</th>
+        <th style="width:180px;">Quantidade</th>
       </tr>
     </thead>
     <tbody>
@@ -106,20 +101,24 @@ function formatarData($data) {
   </table>
 
   <?php if ($data_saida): ?>
-  <div class="row mt-4">
-    <div class="col-5 text-center border p-3">
-      <p><strong>ENTREGUE POR:</strong></p>
-      <p>________________________________</p>
-      <p><?php echo formatarData($data_saida); ?>, às <?php echo htmlspecialchars($hora_saida); ?></p>
+  <div class="doc-signature-row">
+    <div class="doc-signature-box">
+      <p class="doc-label">ENTREGUE POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date"><?php echo formatarData($data_saida); ?>, às <?php echo htmlspecialchars($hora_saida); ?></p>
     </div>
-    <div class="col-2"></div>
-    <div class="col-5 text-center border p-3">
-      <p><strong>RECEBIDO POR:</strong></p>
-      <p>________________________________</p>
-      <p>____/____/______, às ____:____h</p>
+    <div class="doc-signature-box">
+      <p class="doc-label">RECEBIDO POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date">____/____/______, às ____:____h</p>
     </div>
   </div>
   <?php endif; ?>
+
+  <div class="doc-btn-row no-print">
+    <button onclick="window.print()" class="btn btn-success px-4">Imprimir</button>
+  </div>
+
 </div>
 <?php include 'includes/foot.php'; ?>
 </body>

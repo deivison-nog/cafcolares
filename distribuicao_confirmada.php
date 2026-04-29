@@ -55,36 +55,30 @@ function formatarData($data) {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container py-3">
-  <div class="mb-3 no-print">
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary btn-print">
-      <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
-    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary ms-2">
+<div class="doc-page">
+
+  <div class="no-print mb-2">
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-arrow-left me-1"></i>Voltar
     </a>
   </div>
-  <div class="print-header">
-    <img src="img/brasao.png" alt="Brasão">
-    <div class="print-header-text">
-      <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-      <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-      <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-    </div>
-    <img src="img/prefeitura.png" alt="Prefeitura">
-  </div>
 
-  <h2 class="text-center mb-3">DISTRIBUIÇÃO PARA ESTABELECIMENTOS</h2>
+  <?php include 'includes/doc_header.php'; ?>
+
+  <h2 class="doc-title">Distribuição para Estabelecimentos</h2>
 
   <?php if ($ultima_data): ?>
-    <p><strong>Distribuição Registrada:</strong>
-    Data: <?php echo formatarData($ultima_data); ?>
-    &nbsp;|&nbsp; Hora: <?php echo htmlspecialchars($ultima_hora); ?>
-    &nbsp;|&nbsp; Estabelecimento: <?php echo $estabelecimento; ?></p>
+    <p class="doc-info">
+      <strong>Data:</strong> <?php echo formatarData($ultima_data); ?>
+      &nbsp;|&nbsp;
+      <strong>Hora:</strong> <?php echo htmlspecialchars($ultima_hora); ?>
+      &nbsp;|&nbsp;
+      <strong>Estabelecimento:</strong> <?php echo $estabelecimento; ?>
+    </p>
   <?php endif; ?>
 
-  <table class="table table-bordered">
-    <thead class="table-light">
+  <table class="doc-table">
+    <thead>
       <tr>
         <th>Medicamento/Produto</th>
         <th>Apresentação</th>
@@ -92,7 +86,7 @@ function formatarData($data) {
         <th>Marca</th>
         <th>Lote</th>
         <th>Validade</th>
-        <th>Quantidade</th>
+        <th style="width:90px;">Qtd.</th>
       </tr>
     </thead>
     <tbody>
@@ -117,20 +111,24 @@ function formatarData($data) {
   </table>
 
   <?php if ($ultima_data): ?>
-  <div class="row mt-4">
-    <div class="col-5 text-center border p-3">
-      <p><strong>ENTREGUE POR:</strong></p>
-      <p>________________________________</p>
-      <p><?php echo formatarData($ultima_data); ?>, às <?php echo htmlspecialchars($ultima_hora); ?></p>
+  <div class="doc-signature-row">
+    <div class="doc-signature-box">
+      <p class="doc-label">ENTREGUE POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date"><?php echo formatarData($ultima_data); ?>, às <?php echo htmlspecialchars($ultima_hora); ?></p>
     </div>
-    <div class="col-2"></div>
-    <div class="col-5 text-center border p-3">
-      <p><strong>RECEBIDO POR:</strong></p>
-      <p>________________________________</p>
-      <p>____/____/______, às ____:____h</p>
+    <div class="doc-signature-box">
+      <p class="doc-label">RECEBIDO POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date">____/____/______, às ____:____h</p>
     </div>
   </div>
   <?php endif; ?>
+
+  <div class="doc-btn-row no-print">
+    <button onclick="window.print()" class="btn btn-success px-4">Imprimir</button>
+  </div>
+
 </div>
 <?php include 'includes/foot.php'; ?>
 </body>
