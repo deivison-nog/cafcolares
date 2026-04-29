@@ -12,6 +12,25 @@ if (isset($_GET['search'])) {
     $searchTerm = $_GET['search'];
 }
 
+$itensPorPagina = 10;
+$paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaAtual - 1) * $itensPorPagina;
+
+$countStmt = $pdo->prepare('
+    SELECT COUNT(*) FROM (
+        SELECT 1
+        FROM distribuicao_pacientes dp
+        JOIN medicamentos m ON dp.medicamento_id = m.id
+        JOIN pacientes p ON dp.paciente_id = p.id
+        JOIN usuarios u ON dp.estabelecimento_id = u.id
+        WHERE p.nome LIKE ?
+        GROUP BY dp.data_distribuicao, dp.hora_distribuicao, p.id
+    ) AS sub
+');
+$countStmt->execute(['%' . $searchTerm . '%']);
+$totalItens = $countStmt->fetchColumn();
+$totalPaginas = ceil($totalItens / $itensPorPagina);
+
 $stmt = $pdo->prepare('
     SELECT dp.data_distribuicao, dp.hora_distribuicao, p.nome as paciente_nome, u.usuario as estabelecimento_nome,
         GROUP_CONCAT(CONCAT(m.medicamento, " (", dp.quantidade, ")") SEPARATOR ", ") as medicamentos
@@ -22,9 +41,12 @@ $stmt = $pdo->prepare('
     WHERE p.nome LIKE ?
     GROUP BY dp.data_distribuicao, dp.hora_distribuicao, p.id
     ORDER BY dp.data_distribuicao DESC, dp.hora_distribuicao DESC
-    LIMIT 10
+    LIMIT ? OFFSET ?
 ');
-$stmt->execute(['%' . $searchTerm . '%']);
+$stmt->bindValue(1, '%' . $searchTerm . '%');
+$stmt->bindValue(2, $itensPorPagina, PDO::PARAM_INT);
+$stmt->bindValue(3, $offset, PDO::PARAM_INT);
+$stmt->execute();
 $distribuicoes = $stmt->fetchAll();
 
 function formatarData($data) {
@@ -113,6 +135,31 @@ function formatarData($data) {
         </div>
       </div>
     </div>
+
+    <?php if ($totalPaginas > 1): ?>
+    <nav class="mt-3">
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&search=<?php echo urlencode($searchTerm); ?>">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
+            <a class="page-link" href="?pagina=<?php echo $i; ?>&search=<?php echo urlencode($searchTerm); ?>">
+              <?php echo $i; ?>
+            </a>
+          </li>
+        <?php endfor; ?>
+        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&search=<?php echo urlencode($searchTerm); ?>">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <?php endif; ?>
+
   </div>
 </div>
 <?php include 'includes/foot.php'; ?>

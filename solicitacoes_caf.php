@@ -7,13 +7,35 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'admin') {
 
 include 'db.php';
 
-$stmt = $pdo->prepare('SELECT solicitacoes.*, medicamentos.medicamento, usuarios.usuario
-                       FROM solicitacoes
-                       JOIN medicamentos ON solicitacoes.medicamento_id = medicamentos.id
-                       JOIN usuarios ON solicitacoes.usuario_id = usuarios.id
-                       ORDER BY solicitacoes.data_solicitacao DESC');
-$stmt->execute();
-$solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$itensPorPagina = 10;
+$paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaAtual - 1) * $itensPorPagina;
+
+// Count distinct request groups
+$countStmt = $pdo->query('SELECT COUNT(DISTINCT data_solicitacao) FROM solicitacoes');
+$totalItens = $countStmt->fetchColumn();
+$totalPaginas = ceil($totalItens / $itensPorPagina);
+
+// Fetch the paginated set of distinct timestamps
+$tsStmt = $pdo->prepare('SELECT DISTINCT data_solicitacao FROM solicitacoes ORDER BY data_solicitacao DESC LIMIT :limite OFFSET :offset');
+$tsStmt->bindValue(':limite', $itensPorPagina, PDO::PARAM_INT);
+$tsStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$tsStmt->execute();
+$timestamps = $tsStmt->fetchAll(PDO::FETCH_COLUMN);
+
+if (!empty($timestamps)) {
+    $placeholders = implode(',', array_fill(0, count($timestamps), '?'));
+    $stmt = $pdo->prepare("SELECT solicitacoes.*, medicamentos.medicamento, usuarios.usuario
+                           FROM solicitacoes
+                           JOIN medicamentos ON solicitacoes.medicamento_id = medicamentos.id
+                           JOIN usuarios ON solicitacoes.usuario_id = usuarios.id
+                           WHERE solicitacoes.data_solicitacao IN ($placeholders)
+                           ORDER BY solicitacoes.data_solicitacao DESC");
+    $stmt->execute($timestamps);
+    $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $solicitacoes = [];
+}
 
 if ($solicitacoes === false) {
     $solicitacoes = [];
@@ -104,6 +126,29 @@ if ($solicitacoes === false) {
         </div>
       </div>
     </div>
+
+    <?php if ($totalPaginas > 1): ?>
+    <nav class="mt-3">
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
+            <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
+          </li>
+        <?php endfor; ?>
+        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <?php endif; ?>
+
   </div>
 </div>
 <?php include 'includes/foot.php'; ?>

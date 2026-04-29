@@ -24,14 +24,37 @@ $stmt = $pdo->prepare('SELECT id, medicamento FROM medicamentos WHERE estabeleci
 $stmt->execute(['caf']);
 $medicamentos = $stmt->fetchAll();
 
-$stmt = $pdo->prepare('SELECT solicitacoes.*, medicamentos.medicamento
-                       FROM solicitacoes
-                       JOIN medicamentos ON solicitacoes.medicamento_id = medicamentos.id
-                       WHERE solicitacoes.usuario_id = ?
-                       ORDER BY solicitacoes.data_solicitacao DESC
-                       LIMIT 5');
-$stmt->execute([$usuario_id]);
-$ultimos_pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$itensPorPagina = 10;
+$paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaAtual - 1) * $itensPorPagina;
+
+// Count distinct request groups (one group = one data_solicitacao timestamp)
+$countStmt = $pdo->prepare('SELECT COUNT(DISTINCT data_solicitacao) FROM solicitacoes WHERE usuario_id = ?');
+$countStmt->execute([$usuario_id]);
+$totalItens = $countStmt->fetchColumn();
+$totalPaginas = ceil($totalItens / $itensPorPagina);
+
+// Fetch the paginated set of distinct timestamps
+$tsStmt = $pdo->prepare('SELECT DISTINCT data_solicitacao FROM solicitacoes WHERE usuario_id = ? ORDER BY data_solicitacao DESC LIMIT ? OFFSET ?');
+$tsStmt->bindValue(1, $usuario_id);
+$tsStmt->bindValue(2, $itensPorPagina, PDO::PARAM_INT);
+$tsStmt->bindValue(3, $offset, PDO::PARAM_INT);
+$tsStmt->execute();
+$timestamps = $tsStmt->fetchAll(PDO::FETCH_COLUMN);
+
+if (!empty($timestamps)) {
+    $placeholders = implode(',', array_fill(0, count($timestamps), '?'));
+    $stmt = $pdo->prepare("SELECT solicitacoes.*, medicamentos.medicamento
+                           FROM solicitacoes
+                           JOIN medicamentos ON solicitacoes.medicamento_id = medicamentos.id
+                           WHERE solicitacoes.usuario_id = ?
+                           AND solicitacoes.data_solicitacao IN ($placeholders)
+                           ORDER BY solicitacoes.data_solicitacao DESC");
+    $stmt->execute(array_merge([$usuario_id], $timestamps));
+    $ultimos_pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    $ultimos_pedidos = [];
+}
 
 if ($ultimos_pedidos === false) {
     $ultimos_pedidos = [];
@@ -113,6 +136,29 @@ if ($ultimos_pedidos === false) {
         </div>
       </div>
     </div>
+
+    <?php if ($totalPaginas > 1): ?>
+    <nav class="mt-3">
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
+            <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
+          </li>
+        <?php endfor; ?>
+        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <?php endif; ?>
+
   </div>
 </div>
 <?php include 'includes/foot.php'; ?>

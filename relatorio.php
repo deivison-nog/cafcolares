@@ -18,13 +18,11 @@ if (isset($_GET['filterEstabelecimento'])) {
     $filterEstabelecimento = $_GET['filterEstabelecimento'];
 }
 
-$sql = 'SELECT
-            d.data_distribuicao,
-            d.hora_distribuicao,
-            GROUP_CONCAT(m.medicamento SEPARATOR \', \') AS medicamentos,
-            GROUP_CONCAT(d.quantidade SEPARATOR \', \') AS quantidades,
-            u.usuario as estabelecimento
-        FROM distribuicao d
+$itensPorPagina = 10;
+$paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+$offset = ($paginaAtual - 1) * $itensPorPagina;
+
+$baseSql = 'FROM distribuicao d
         JOIN medicamentos m ON d.medicamento_id = m.id
         JOIN usuarios u ON d.estabelecimento_id = u.id';
 
@@ -42,13 +40,29 @@ if (!empty($filterEstabelecimento)) {
     $params['estabelecimento'] = $filterEstabelecimento;
 }
 
-$sql .= $whereClause . '
+$countSql = 'SELECT COUNT(*) FROM (SELECT 1 ' . $baseSql . $whereClause
+    . ' GROUP BY d.data_distribuicao, d.hora_distribuicao, u.usuario) AS sub';
+$countStmt = $pdo->prepare($countSql);
+$countStmt->execute($params);
+$totalItens = $countStmt->fetchColumn();
+$totalPaginas = ceil($totalItens / $itensPorPagina);
+
+$sql = 'SELECT d.data_distribuicao, d.hora_distribuicao,
+            GROUP_CONCAT(m.medicamento SEPARATOR \', \') AS medicamentos,
+            GROUP_CONCAT(d.quantidade SEPARATOR \', \') AS quantidades,
+            u.usuario as estabelecimento '
+    . $baseSql . $whereClause . '
         GROUP BY d.data_distribuicao, d.hora_distribuicao, u.usuario
         ORDER BY d.data_distribuicao DESC, d.hora_distribuicao DESC
-        LIMIT 10';
+        LIMIT :limite OFFSET :offset';
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute($params);
+foreach ($params as $key => $val) {
+    $stmt->bindValue(':' . $key, $val);
+}
+$stmt->bindValue(':limite', $itensPorPagina, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $distribuicoes = $stmt->fetchAll();
 
 function formatarData($data) {
@@ -146,6 +160,31 @@ function formatarData($data) {
         </div>
       </div>
     </div>
+
+    <?php if ($totalPaginas > 1): ?>
+    <nav class="mt-3">
+      <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&searchMedicamento=<?php echo urlencode($searchMedicamento); ?>&filterEstabelecimento=<?php echo urlencode($filterEstabelecimento); ?>">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
+          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
+            <a class="page-link" href="?pagina=<?php echo $i; ?>&searchMedicamento=<?php echo urlencode($searchMedicamento); ?>&filterEstabelecimento=<?php echo urlencode($filterEstabelecimento); ?>">
+              <?php echo $i; ?>
+            </a>
+          </li>
+        <?php endfor; ?>
+        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&searchMedicamento=<?php echo urlencode($searchMedicamento); ?>&filterEstabelecimento=<?php echo urlencode($filterEstabelecimento); ?>">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <?php endif; ?>
+
   </div>
 </div>
 <?php include 'includes/foot.php'; ?>
