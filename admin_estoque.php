@@ -155,13 +155,9 @@ $estabelecimentos = $pdo->query("SELECT DISTINCT estabelecimento FROM medicament
     <?php if ($totalPaginas > 1): ?>
     <nav class="mt-3">
       <ul class="pagination pagination-sm justify-content-center">
-        <?php if ($paginaAtual > 1): ?>
-          <li class="page-item">
-            <a class="page-link" href="?pagina=<?php echo $paginaAtual-1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">
-              &laquo;
-            </a>
-          </li>
-        <?php endif; ?>
+        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual-1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">&laquo;</a>
+        </li>
         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
           <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
             <a class="page-link" href="?pagina=<?php echo $i; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">
@@ -169,13 +165,9 @@ $estabelecimentos = $pdo->query("SELECT DISTINCT estabelecimento FROM medicament
             </a>
           </li>
         <?php endfor; ?>
-        <?php if ($paginaAtual < $totalPaginas): ?>
-          <li class="page-item">
-            <a class="page-link" href="?pagina=<?php echo $paginaAtual+1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">
-              &raquo;
-            </a>
-          </li>
-        <?php endif; ?>
+        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual+1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">&raquo;</a>
+        </li>
       </ul>
     </nav>
     <?php endif; ?>

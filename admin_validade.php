@@ -174,11 +174,9 @@ $estabelecimentos = $pdo->query("SELECT DISTINCT estabelecimento FROM medicament
 
     <?php if ($totalPaginas > 1): ?>
     <nav class="mt-3">
-      <ul class="pagination">
+      <ul class="pagination pagination-sm justify-content-center">
         <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>">
-            <i class="bi bi-chevron-left"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>">&laquo;</a>
         </li>
         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
           <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
@@ -188,9 +186,7 @@ $estabelecimentos = $pdo->query("SELECT DISTINCT estabelecimento FROM medicament
           </li>
         <?php endfor; ?>
         <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>">
-            <i class="bi bi-chevron-right"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>">&raquo;</a>
         </li>
       </ul>
     </nav>

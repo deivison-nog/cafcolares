@@ -117,11 +117,9 @@ $totalPaginas = ceil($totalItens / $itensPorPagina);
 
     <?php if ($totalPaginas > 1): ?>
     <nav class="mt-3">
-      <ul class="pagination">
+      <ul class="pagination pagination-sm justify-content-center">
         <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>">
-            <i class="bi bi-chevron-left"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>">&laquo;</a>
         </li>
         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
           <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
@@ -129,9 +127,7 @@ $totalPaginas = ceil($totalItens / $itensPorPagina);
           </li>
         <?php endfor; ?>
         <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>">
-            <i class="bi bi-chevron-right"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>">&raquo;</a>
         </li>
       </ul>
     </nav>

@@ -151,9 +151,7 @@ function formatarData($data) {
     <nav class="mt-3">
       <ul class="pagination pagination-sm justify-content-center">
         <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&search=<?php echo urlencode($searchTerm); ?>">
-            <i class="bi bi-chevron-left"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&search=<?php echo urlencode($searchTerm); ?>">&laquo;</a>
         </li>
         <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
           <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
@@ -163,9 +161,7 @@ function formatarData($data) {
           </li>
         <?php endfor; ?>
         <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&search=<?php echo urlencode($searchTerm); ?>">
-            <i class="bi bi-chevron-right"></i>
-          </a>
+          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&search=<?php echo urlencode($searchTerm); ?>">&raquo;</a>
         </li>
       </ul>
     </nav>
