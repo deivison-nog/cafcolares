@@ -24,7 +24,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlay = document.getElementById('sidebarOverlay');
     const toggle = document.getElementById('sidebarToggle');
 
+    if (!sidebar && !overlay && !toggle) {
+        return;
+    }
+
     if (!sidebar || !overlay || !toggle) {
+        console.warn('Estrutura da sidebar incompleta; toggle mobile desativado nesta página.');
         return;
     }
 
