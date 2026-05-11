@@ -7,6 +7,8 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'admin') {
 
 include 'db.php';
 require_once 'includes/pagination_helper.php';
+
+$itensPorPagina = 10;
 $paginaAtual = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
 $offset = ($paginaAtual - 1) * $itensPorPagina;
 
