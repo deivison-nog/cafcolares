@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_NONE) {
             <span>Gestão farmacêutica com visual mais moderno e responsivo.</span>
         </div>
         <div class="footer-contact">
-            <span><i class="bi bi-envelope"></i> cafcolares@outolook.com</span>
+            <span><i class="bi bi-envelope"></i> cafcolares@outlook.com</span>
             <span><i class="bi bi-telephone"></i> (91) 98593-1710</span>
         </div>
     </div>
