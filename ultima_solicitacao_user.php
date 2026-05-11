@@ -112,7 +112,7 @@ try {
   <?php endif; ?>
 
   <div class="doc-btn-row no-print">
-    <button onclick="var u=new URL(location.href);u.searchParams.set('autoprint','1');window.open(u.toString(),'_blank');" class="btn btn-success px-4">Imprimir</button>
+    <button onclick="var sep=location.search?'&':'?';window.open(location.href+sep+'autoprint=1','_blank');" class="btn btn-success px-4">Imprimir</button>
   </div>
 
 </div>
