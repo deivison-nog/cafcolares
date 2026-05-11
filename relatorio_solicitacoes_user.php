@@ -6,6 +6,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'usuario') {
 }
 
 include 'db.php';
+require_once 'includes/pagination_helper.php';
 
 $usuario_nome = $_SESSION['usuario'];
 
@@ -137,23 +138,7 @@ if ($ultimos_pedidos === false) {
       </div>
     </div>
 
-    <?php if ($totalPaginas > 1): ?>
-    <nav class="mt-3">
-      <ul class="pagination pagination-sm justify-content-center">
-        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>">&laquo;</a>
-        </li>
-        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
-            <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
-          </li>
-        <?php endfor; ?>
-        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>">&raquo;</a>
-        </li>
-      </ul>
-    </nav>
-    <?php endif; ?>
+    <?php echo renderPaginacao($paginaAtual, $totalPaginas); ?>
 
   </div>
 </div>

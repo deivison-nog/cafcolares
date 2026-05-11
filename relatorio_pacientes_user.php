@@ -1,5 +1,6 @@
 <?php
 include 'db.php';
+require_once 'includes/pagination_helper.php';
 
 session_start();
 if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'usuario') {
@@ -147,25 +148,7 @@ function formatarData($data) {
       </div>
     </div>
 
-    <?php if ($totalPaginas > 1): ?>
-    <nav class="mt-3">
-      <ul class="pagination pagination-sm justify-content-center">
-        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual - 1; ?>&search=<?php echo urlencode($searchTerm); ?>">&laquo;</a>
-        </li>
-        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
-            <a class="page-link" href="?pagina=<?php echo $i; ?>&search=<?php echo urlencode($searchTerm); ?>">
-              <?php echo $i; ?>
-            </a>
-          </li>
-        <?php endfor; ?>
-        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual + 1; ?>&search=<?php echo urlencode($searchTerm); ?>">&raquo;</a>
-        </li>
-      </ul>
-    </nav>
-    <?php endif; ?>
+    <?php echo renderPaginacao($paginaAtual, $totalPaginas, 'search=' . urlencode($searchTerm)); ?>
 
   </div>
 </div>

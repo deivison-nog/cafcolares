@@ -6,8 +6,9 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'admin') {
 }
 
 include 'db.php';
+require_once 'includes/pagination_helper.php';
 
-$estabelecimentoFiltro = '';
+$estabelecimentoFiltro= '';
 $pesquisaNome = '';
 
 $itensPorPagina = 10;
@@ -152,25 +153,7 @@ $estabelecimentos = $pdo->query("SELECT DISTINCT estabelecimento FROM medicament
     </div>
 
     <!-- Pagination -->
-    <?php if ($totalPaginas > 1): ?>
-    <nav class="mt-3">
-      <ul class="pagination pagination-sm justify-content-center">
-        <li class="page-item <?php echo $paginaAtual <= 1 ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual-1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">&laquo;</a>
-        </li>
-        <?php for ($i = 1; $i <= $totalPaginas; $i++): ?>
-          <li class="page-item <?php echo $i == $paginaAtual ? 'active' : ''; ?>">
-            <a class="page-link" href="?pagina=<?php echo $i; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">
-              <?php echo $i; ?>
-            </a>
-          </li>
-        <?php endfor; ?>
-        <li class="page-item <?php echo $paginaAtual >= $totalPaginas ? 'disabled' : ''; ?>">
-          <a class="page-link" href="?pagina=<?php echo $paginaAtual+1; ?>&estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>&pesquisa=<?php echo urlencode($pesquisaNome); ?>">&raquo;</a>
-        </li>
-      </ul>
-    </nav>
-    <?php endif; ?>
+    <?php echo renderPaginacao($paginaAtual, $totalPaginas, 'estabelecimento=' . urlencode($estabelecimentoFiltro) . '&pesquisa=' . urlencode($pesquisaNome)); ?>
 
     <div class="mt-3">
       <a href="lista_completa.php?estabelecimento=<?php echo urlencode($estabelecimentoFiltro); ?>" class="btn btn-outline-secondary btn-sm">
