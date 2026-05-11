@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$paginaAtual = basename($_SERVER['PHP_SELF'] ?? '');
+$_menuPaginaAtiva = basename($_SERVER['PHP_SELF'] ?? '');
 $nivelAcesso = $_SESSION['nivel_acesso'] ?? '';
 $usuario = $_SESSION['usuario'] ?? 'Usuário';
 $usuarioInicial = strtoupper(substr($usuario, 0, 1));
@@ -61,7 +61,7 @@ $itensMenu = array_merge($itensComuns, $nivelAcesso === 'admin' ? $itensAdmin : 
 
     <ul class="sidebar-nav">
         <?php foreach ($itensMenu as $item): ?>
-            <?php $ativo = $paginaAtual === $item['href']; ?>
+            <?php $ativo = $_menuPaginaAtiva === $item['href']; ?>
             <li>
                 <a href="<?php echo htmlspecialchars($item['href']); ?>" class="<?php echo $ativo ? 'active' : ''; ?>">
                     <i class="bi <?php echo htmlspecialchars($item['icon']); ?>"></i>
