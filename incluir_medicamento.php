@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<?php include 'includes/head.php'; ?>
+
 <div id="wrapper" class="d-flex">
   <?php include 'includes/menu_lateral.php'; ?>
   <div class="main-content flex-grow-1">

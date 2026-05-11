@@ -35,6 +35,9 @@ $itensUsuario = [
 
 $itensMenu = array_merge($itensComuns, $nivelAcesso === 'admin' ? $itensAdmin : $itensUsuario);
 ?>
+<button class="btn sidebar-mobile-toggle d-lg-none" id="sidebarToggle" type="button" aria-label="Abrir menu">
+    <i class="bi bi-list fs-4"></i>
+</button>
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <aside class="sidebar" id="appSidebar">

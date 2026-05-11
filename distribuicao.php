@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
   </script>
 </head>
 <body>
-<?php include 'includes/head.php'; ?>
+
 <div id="wrapper" class="d-flex">
   <?php include 'includes/menu_lateral.php'; ?>
   <div class="main-content flex-grow-1">

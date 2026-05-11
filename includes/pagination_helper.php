@@ -45,12 +45,22 @@ function renderPaginacao(int $paginaAtual, int $totalPaginas, string $extraParam
     $html .= '<a class="page-link" href="' . $qs($paginaAtual - 1) . '" title="Página anterior">&laquo;</a>';
     $html .= '</li>';
 
-    // Numbered pages
-    for ($i = 1; $i <= $totalPaginas; $i++) {
+    // Numbered pages with ellipsis
+    $delta = 2;
+    $pagesInRange = range(max(1, $paginaAtual - $delta), min($totalPaginas, $paginaAtual + $delta));
+    $pagesToShow = array_unique(array_merge([1, $totalPaginas], $pagesInRange));
+    sort($pagesToShow);
+
+    $prev = null;
+    foreach ($pagesToShow as $i) {
+        if ($prev !== null && $i - $prev > 1) {
+            $html .= '<li class="page-item disabled"><span class="page-link">&hellip;</span></li>';
+        }
         $active = ($i === $paginaAtual) ? ' active' : '';
         $html .= '<li class="page-item' . $active . '">';
         $html .= '<a class="page-link" href="' . $qs($i) . '">' . $i . '</a>';
         $html .= '</li>';
+        $prev = $i;
     }
 
     // › Next
