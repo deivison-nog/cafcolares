@@ -40,10 +40,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
-    $stmt = $pdo->prepare('DELETE FROM medicamentos WHERE id = ?');
-    $stmt->execute([$id]);
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare('DELETE FROM solicitacoes WHERE medicamento_id = ?')->execute([$id]);
+        $pdo->prepare('DELETE FROM distribuicao_pacientes WHERE medicamento_id = ?')->execute([$id]);
+        $pdo->prepare('DELETE FROM distribuicao WHERE medicamento_id = ?')->execute([$id]);
+        $pdo->prepare('DELETE FROM medicamentos WHERE id = ?')->execute([$id]);
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
 
-    echo 'Medicamento excluído com sucesso!';
     header('Location: admin_estoque.php');
     exit;
 }
