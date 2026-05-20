@@ -95,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <option value="Farmácia Básica">Farmácia Básica</option>
                 <option value="Medicamentos Injetáveis">Injetáveis</option>
                 <option value="Insumos">Insumos</option>
+                <option value="Reagentes/ Insumos Laboratoriais">Reagentes/ Insumos Laboratoriais</option>
                 <option value="Saúde Mental">Saúde Mental</option>
                 <option value="Saúde Bucal">Saúde Bucal</option>
                 <option value="Formulas e Suplementos">Fórmulas e Suplementos</option>
