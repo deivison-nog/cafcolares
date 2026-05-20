@@ -5,10 +5,8 @@ if (!isset($_SESSION['usuario']) || $_SESSION['nivel_acesso'] !== 'usuario') {
     exit;
 }
 
-// Conexão com o banco de dados
 include 'db.php';
 
-// Buscar a data e hora da última saída
 $stmt = $pdo->prepare('
     SELECT data_distribuicao, hora_distribuicao
     FROM distribuicao_pacientes
@@ -19,9 +17,7 @@ $stmt = $pdo->prepare('
 $stmt->execute([$_SESSION['usuario']]);
 $ultima_saida = $stmt->fetch();
 
-// Verificar se há saídas registradas
 if ($ultima_saida) {
-    // Buscar todas as saídas que possuem a mesma data e hora da última saída
     $stmt = $pdo->prepare('
         SELECT dp.*, m.medicamento, m.apresentacao, p.nome as paciente
         FROM distribuicao_pacientes dp
@@ -40,188 +36,100 @@ if ($ultima_saida) {
     $saidas = [];
 }
 
-// Função para formatar a data
 function formatarData($data) {
     $date = new DateTime($data);
     return $date->format('d/m/Y');
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Última Saída de Medicamentos - CAF</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            background-color: #fff;
-        }
-        .header-saida {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header-saida img {
-            height: 60px;
-        }
-        .header-text {
-            text-align: center;
-            flex-grow: 1;
-        }
-        .header-text h1, .header-text h2, .header-text h3 {
-            margin: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .print-button {
-            margin: 20px 0;
-            text-align: right;
-        }
-        .print-button button {
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        .entregue-recebido {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .entregue, .recebido {
-            width: 45%;
-            text-align: center;
-            border-style: solid;
-        }
-        @media print {
-            body {
-                -webkit-print-color-adjust: exact;
-            }
-            .print-button {
-                display: none;
-            }
-            .main-content {
-                margin: 0;
-                padding: 0;
-                page-break-after: auto;
-            }
-            @page {
-                size: A4 portrait;
-                margin: 10mm;
-            }
-        }
-    </style>
-    <script>
-        function imprimirConteudo() {
-            var conteudo = document.querySelector('.main-content').innerHTML;
-            var estilos = document.querySelector('style').innerHTML;
-            var janelaImpressao = window.open('', '', 'width=800, height=600');
-            janelaImpressao.document.write('<html><head><title>Imprimir</title>');
-            janelaImpressao.document.write('<link rel="stylesheet" href="css/style.css">');
-            janelaImpressao.document.write('<style>' + estilos + '</style>');
-            janelaImpressao.document.write('</head><body>');
-            janelaImpressao.document.write(conteudo);
-            janelaImpressao.document.write('</body></html>');
-            janelaImpressao.document.close();
-            janelaImpressao.print();
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Última Saída de Medicamentos – CAF</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <?php include 'includes/head.php'; ?>
-    <div class="container">
-        <?php include 'includes/menu_lateral.php'; ?>
-        <div class="main-content">
-            <div class="header-saida">
-                <img src="img/brasao.png" alt="Logo Left">
-                <div class="header-text">
-                    <h3>PREFEITURA MUNICIPAL DE COLARES</h3>
-                    <h3>SECRETARIA MUNICIPAL DE SAÚDE</h3>
-                    <h3>CENTRAL DE ABASTECIMENTO AMBULATORIAL</h3>
-                </div>
-                <img src="img/prefeitura.png" alt="Logo Right">
-            </div>
-            <center>
-                <h2>Saída de Medicamentos</h2>
-            </center>
-            <div class="print-button">
-                <button onclick="imprimirConteudo()">Imprimir</button>
-            </div>
-            <div class="ultima-saida-info">
-                <?php if ($ultima_saida): ?>
-                    <?php
-                    // Encontrar o nome do paciente na última saída
-                    $stmt = $pdo->prepare('
-                        SELECT p.nome as paciente
-                        FROM distribuicao_pacientes dp
-                        JOIN pacientes p ON dp.paciente_id = p.id
-                        WHERE dp.data_distribuicao = ? AND dp.hora_distribuicao = ?
-                        LIMIT 1
-                    ');
-                    $stmt->execute([
-                        $ultima_saida['data_distribuicao'],
-                        $ultima_saida['hora_distribuicao']
-                    ]);
-                    $paciente = $stmt->fetchColumn();
-                    ?>
+<div class="doc-page">
 
-                    <h4>Data: <?php echo formatarData($ultima_saida['data_distribuicao']); ?> - Hora: <?php echo htmlspecialchars($ultima_saida['hora_distribuicao']); ?> <br>
-                      Paciente: <?php echo htmlspecialchars($paciente); ?></h4>
-                <?php else: ?>
-                    <p>Nenhuma saída registrada ainda.</p>
-                <?php endif; ?>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Medicamento/Produto</th>
-                        <th>Quantidade</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($saidas): ?>
-                        <?php foreach ($saidas as $saida): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($saida['medicamento']); ?></td>
-                                <td><?php echo htmlspecialchars($saida['quantidade']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="2">Nenhuma saída encontrada.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-            <div class="entregue-recebido">
-                <div class="entregue">
-                    <p>ENTREGUE POR:</p>
-                    <p>________________________________</p>
-                    <p><?php echo formatarData($ultima_saida['data_distribuicao']); ?>, às <?php echo htmlspecialchars($ultima_saida['hora_distribuicao']); ?></p>
-                </div>
+  <div class="no-print mb-2">
+    <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Voltar
+    </a>
+  </div>
 
-                <div class="recebido">
-                    <p>RECEBIDO POR:</p>
-                    <p>________________________________</p>
-                    <p>____/____/______, às ____:____h</p>
-                </div>
-            </div>
-        </div>
+  <?php include 'includes/doc_header.php'; ?>
+
+  <h2 class="doc-title">Saída de Medicamentos</h2>
+
+  <?php if ($ultima_saida): ?>
+    <?php
+    $stmt = $pdo->prepare('
+        SELECT p.nome as paciente
+        FROM distribuicao_pacientes dp
+        JOIN pacientes p ON dp.paciente_id = p.id
+        WHERE dp.data_distribuicao = ? AND dp.hora_distribuicao = ?
+        LIMIT 1
+    ');
+    $stmt->execute([$ultima_saida['data_distribuicao'], $ultima_saida['hora_distribuicao']]);
+    $paciente = $stmt->fetchColumn();
+    ?>
+    <p class="doc-info">
+      <strong>Data:</strong> <?php echo formatarData($ultima_saida['data_distribuicao']); ?>
+      &nbsp;|&nbsp;
+      <strong>Hora:</strong> <?php echo htmlspecialchars($ultima_saida['hora_distribuicao']); ?>
+      &nbsp;|&nbsp;
+      <strong>Paciente:</strong> <?php echo htmlspecialchars($paciente); ?>
+    </p>
+  <?php else: ?>
+    <p>Nenhuma saída registrada ainda.</p>
+  <?php endif; ?>
+
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Medicamento/Produto</th>
+        <th style="width:180px;">Quantidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php if ($saidas): ?>
+        <?php foreach ($saidas as $saida): ?>
+          <tr>
+            <td><?php echo htmlspecialchars($saida['medicamento']); ?></td>
+            <td><?php echo htmlspecialchars($saida['quantidade']); ?></td>
+          </tr>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <tr>
+          <td colspan="2" class="text-center">Nenhuma saída encontrada.</td>
+        </tr>
+      <?php endif; ?>
+    </tbody>
+  </table>
+
+  <?php if ($ultima_saida): ?>
+  <div class="doc-signature-row">
+    <div class="doc-signature-box">
+      <p class="doc-label">ENTREGUE POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date"><?php echo formatarData($ultima_saida['data_distribuicao']); ?>, às <?php echo htmlspecialchars($ultima_saida['hora_distribuicao']); ?></p>
     </div>
-    <?php include 'includes/foot.php'; ?>
+    <div class="doc-signature-box">
+      <p class="doc-label">RECEBIDO POR:</p>
+      <div class="doc-signature-line"></div>
+      <p class="doc-signature-date">____/____/______, às ____:____h</p>
+    </div>
+  </div>
+  <?php endif; ?>
+
+  <div class="doc-btn-row no-print">
+    <button onclick="var sep=location.search?'&':'?';window.open(location.href+sep+'autoprint=1','_blank');" class="btn btn-success px-4">Imprimir</button>
+  </div>
+
+</div>
+<?php include 'includes/foot.php'; ?>
 </body>
 </html>
